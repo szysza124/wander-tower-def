@@ -1,27 +1,24 @@
-#!/usr/bin/python
-
-import sys, time
-from PyQt4 import QtCore, QtGui
-
-import globals
+import math
+from PyQt5 import QtCore
 
 class Projectile(object):
-	def __init__(self, origin, destination):
-		size = 1
-		#the tower that shot the projectile
-		self.origin = origin
-		#the enemy/enemies the projectile is headed toward.
-		self.destination = destination
+    def __init__(self, origin, destination):
+        self.origin = origin
+        self.destination = destination
+        self.pos_x = origin.getCenter().x()
+        self.pos_y = origin.getCenter().y()
+        self.speed = 5
+        self.hit = False
 
-		self.rof = self.origin.rof
+    def move(self):
+        dx = self.destination.getCenter().x() - self.pos_x
+        dy = self.destination.getCenter().y() - self.pos_y
+        dist = math.hypot(dx, dy)
+        if dist <= self.speed:
+            self.hit = True
+        elif dist > 0:
+            self.pos_x += (dx / dist) * self.speed
+            self.pos_y += (dy / dist) * self.speed
 
-	def move(self):
-		pass
-
-	def dealDamage(self):
-		self.destination.health -= self.origin.damage
-
-
-class Rocket(Projectile):
-	def __init__(self):
-		super(Rocket, self).__init__()
+    def dealDamage(self):
+        self.destination.health -= self.origin.damage

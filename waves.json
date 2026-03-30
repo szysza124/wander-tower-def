@@ -2,7 +2,7 @@
 	"wave_1" : {
 		"type" : "BlueCircle",
 		"delay" : 40,
-		"HP" : 100,
+		"HP" : "duzo",
 		"PointsPer" : 200,
 		"units": 3
 	},
@@ -10,7 +10,7 @@
 	"wave_2" : {
 		"type" : "GreenCircle",
 		"delay" : 10,
-		"HP" : 200,
+		"HP" : 0,
 		"PointsPer" : 200,
 		"units": 10
 	},
@@ -21,5 +21,36 @@
 		"HP" : 700,
 		"PointsPer" : 200,
 		"units": 10
-	}
+	},
+	"wave_4" : {
+        "type" : "RedCircle",
+        "delay" : 8,
+        "HP" : 300,
+        "PointsPer" : 200,
+        "units": 15
+    },
+
+    "wave_5" : {
+        "type" : "BlueCircle",
+        "delay" : 20,
+        "HP" : 1500,
+        "PointsPer" : 300,
+        "units": 8
+    },
+
+    "wave_6" : {
+        "type" : "RedCircle",
+        "delay" : 5,
+        "HP" : 500,
+        "PointsPer" : 150,
+        "units": 30
+    },
+
+    "wave_7" : {
+        "type" : "GreenCircle",
+        "delay" : 30,
+        "HP" : 3000,
+        "PointsPer" : 500,
+        "units": 5
+    }
 }
