@@ -117,7 +117,12 @@ class scoreBoard(QtWidgets.QFrame):
         self.nextWaveBtn.clicked.connect(self.nextWaveAction) 
 
     def nextWaveAction(self):
-        self.mainBoard.isWaveSent = True
+        
+        if hasattr(self.mainBoard.controller, 'network'):
+            cmd = {"action":"next_wave"}
+            self.mainBoard.controller.network.send_command(cmd)
+        else:
+            self.mainBoard.isWaveSent = True
 
     def setupUpgradeButton(self):
         self.upgradeBtn = QtWidgets.QPushButton("upgrade",self)
@@ -140,7 +145,6 @@ class scoreBoard(QtWidgets.QFrame):
         qp.setPen(QtGui.QColor(0, 34, 3))
         qp.setFont(QtGui.QFont('Decorative', 10))
         qp.drawText(10, 20, "GAME TICKS: ")
-        # print("TIME REDRAWN!")
 
     def towerOptions(self, qp):
         pass

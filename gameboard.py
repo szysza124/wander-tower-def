@@ -15,6 +15,7 @@ class gameBoard(QtWidgets.QFrame):
     def __init__(self, parent):
         super().__init__(parent) 
         self.controller = parent
+        self.network_commands = [] # Kolejka zdarzeń sieciowych
 
         self.mouse_x = -1
         self.mouse_y = -1
@@ -179,6 +180,12 @@ class gameBoard(QtWidgets.QFrame):
             qp.setFont(QtGui.QFont('Arial', 8, QtGui.QFont.Bold))
             text_rect = QtCore.QRect(i.position_x, i.position_y,  i.size*globals.blockSize, i.size*globals.blockSize)
             qp.drawText(text_rect, QtCore.Qt.AlignCenter, "v" + str(i.level))
+            if hasattr(i, 'owner'):
+                qp.setPen(QtGui.QColor(255, 255, 0)) # zolty nick
+                qp.setFont(QtGui.QFont('Arial', 7, QtGui.QFont.Bold)) 
+                qp.drawText(i.position_x, i.position_y - 2, i.owner)
+
+        
 
      
 
@@ -246,6 +253,21 @@ class gameBoard(QtWidgets.QFrame):
                 self.isTowerClicked = True
                 globals.money -= self.lastPlacedTower.cost
 
+                # nick na naszej wiezy
+                if hasattr(self.controller, 'network'):
+                    self.lastPlacedTower.owner = self.controller.network.nickname
+                else:
+                    self.lastPlacedTower.owner = "Ja" 
+                
+                if hasattr(self.controller, 'network'):
+                    cmd = {
+                        "action": "build",
+                        "type": self.lastPlacedTower.__class__.__name__, 
+                        "x": self.lastPlacedTower.position_x,
+                        "y": self.lastPlacedTower.position_y
+                    }
+                    self.controller.network.send_command(cmd)
+
                 if self.lastPlacedTower.size == 1:
                     self.nonOccupiable.append([self.myround(self.get_x()), self.myround(self.get_y())])
                     self.lastPlacedTower.occupied.append([self.myround(self.get_x()), self.myround(self.get_y())])
@@ -279,6 +301,12 @@ class gameBoard(QtWidgets.QFrame):
         pass
 
     def timedLoop(self):
+        while len(self.network_commands) > 0:
+            cmd = self.network_commands.pop(0)
+            if cmd.get('action') == 'build':
+                self.buildNetworkTower(cmd['type'], cmd['x'], cmd['y'], cmd['nickname'])
+            elif cmd.get('action') == 'next_wave':
+                self.start_wave_from_network()
         self.moveEnemies()
         for t in self.towerOccupancy:
             if t.cooldown > 0:
@@ -290,6 +318,27 @@ class gameBoard(QtWidgets.QFrame):
                         self.projectileOccupancy.append(Projectile(t, k))
                     t.cooldown = t.rof * 5
         self.dealDamage()
+
+    def buildNetworkTower(self, tower_type, x, y, owner_nick): 
+        import sys
+        try:
+            TowerClass = getattr(sys.modules[__name__], tower_type)
+            new_tower = TowerClass()
+            new_tower.position_x = x
+            new_tower.position_y = y
+            
+            new_tower.owner = owner_nick 
+            
+            self.towerOccupancy.append(new_tower)
+            self.repaint()
+            print(f"CO-OP {owner_nick} postawił wieżę {tower_type} na X:{x} Y:{y}!")
+        except Exception as e:
+            print(f"BŁĄD SIECI Nie udało się zbudować wieży: {e}")
+            
+    def start_wave_from_network(self):
+        if not self.isWaveInProgress:
+            self.isWaveSent = True
+            print(f"[SIEĆ] Fala {self.currentWave + 1} wystartowała!")
 
     def dealDamage(self):
         for p in self.projectileOccupancy:

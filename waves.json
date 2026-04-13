@@ -2,7 +2,7 @@
 	"wave_1" : {
 		"type" : "BlueCircle",
 		"delay" : 40,
-		"HP" : "duzo",
+		"HP" : 100,
 		"PointsPer" : 200,
 		"units": 3
 	},
@@ -10,7 +10,7 @@
 	"wave_2" : {
 		"type" : "GreenCircle",
 		"delay" : 10,
-		"HP" : 0,
+		"HP" : 200,
 		"PointsPer" : 200,
 		"units": 10
 	},

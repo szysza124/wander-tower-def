@@ -6,8 +6,9 @@ from enemies import *
 from towers import *
 from scoreboard import *
 from gameboard import *
-
+from network import GameClient
 import globals
+import random
 
 
 class TowerDefence(QtWidgets.QMainWindow):
@@ -28,6 +29,9 @@ class TowerDefence(QtWidgets.QMainWindow):
         self.timer.start(globals.gameSpeed, self)
         self.update()
         self.isFastForward = False
+        moj_nick = "Gracz_" + str(random.randint(1000, 9999))
+        self.network = GameClient(self.mainBoard, nickname=moj_nick)
+
 
     def timerEvent(self, event):
         if event.timerId() == self.timer.timerId():
