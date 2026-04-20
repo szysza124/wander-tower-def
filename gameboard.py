@@ -151,9 +151,10 @@ class gameBoard(QtWidgets.QFrame):
             qp.drawLine(0, i, globals.boardWidth, i)
 
     def moveEnemies(self):
-        if len(self.towerOccupancy) > 0: 
-            for i in self.enemyOccupancy:
-                i.move()
+        for i in self.enemyOccupancy:
+            if hasattr(i, 'update_ai'):
+                i.update_ai(self.towerOccupancy)
+            i.move()
 
     def drawEnemies(self, qp):
         for i in self.enemyOccupancy:

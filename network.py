@@ -4,7 +4,7 @@ import json
 
 class GameClient:
     def __init__(self, board, nickname="Player1"):
-        self.board = board # Przekazujemy dostęp do planszy
+        self.board = board 
         self.nickname = nickname
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connected = False
@@ -15,7 +15,7 @@ class GameClient:
             receive_thread = threading.Thread(target=self.receive, daemon=True)
             receive_thread.start()
         except ConnectionRefusedError:
-            print("[SIEĆ] Serwer offline. Gramy solo.")
+            print("Serwer offline. Gramy solo.")
 
     def receive(self):
         while self.connected:
@@ -39,8 +39,6 @@ class GameClient:
                 self.client.close()
                 self.connected = False
                 break
-
-        
 
     def send_command(self, command_dict):
         if self.connected:

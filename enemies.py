@@ -2,6 +2,7 @@ import sys
 import time
 from PyQt5 import QtCore, QtGui
 from math import floor
+import math
 
 class Enemy(object):
     def __init__(self, ep=None):
@@ -122,3 +123,46 @@ class RedCircle(Enemy):
         self.health = HP
         self.speed = 2
         self.color = QtGui.QColor(180, 25, 10, 255) 
+
+class SmartEnemy(RedCircle): 
+    def __init__(self, path, hp):
+        super().__init__(path, hp)
+        self.ai_state = "IDLE"
+        self.base_speed = self.speed  
+
+    def assess_environment(self, towers):
+        state = {
+            "threat_level": 0,          
+            "nearest_tower_dist": 9999  
+        }  
+        for t in towers:
+            dx = t.position_x - self.position_x
+            dy = t.position_y - self.position_y
+            dist = math.hypot(dx, dy)
+            
+            if dist < state["nearest_tower_dist"]:
+                state["nearest_tower_dist"] = dist
+            if dist < 200: 
+                state["threat_level"] += 1        
+        return state
+    
+    def make_decision(self, state):
+        if state["threat_level"] >= 2:
+            self.ai_state = "PANIC"   
+        elif state["nearest_tower_dist"] < 100:
+            self.ai_state = "SHIELD" 
+        else:
+            self.ai_state = "NORMAL" 
+
+    def apply_behavior(self):
+        if self.ai_state == "PANIC":
+            self.speed = self.base_speed * 2.5 
+        elif self.ai_state == "SHIELD":
+            self.speed = self.base_speed * 0.5  
+        else:
+            self.speed = self.base_speed      
+
+    def update_ai(self, towers):
+        current_state = self.assess_environment(towers)
+        self.make_decision(current_state)
+        self.apply_behavior()

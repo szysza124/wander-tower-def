@@ -35,7 +35,7 @@ def handle(client):
             break
 
 def receive():
-    print("Serwer gry uruchomiony! Oczekiwanie na graczy...")
+    print("Serwer uruchomiony, oczekiwanie na graczy...")
     while True:
         client, address = server.accept()
         print(f"Połączono z adresem {str(address)}")
